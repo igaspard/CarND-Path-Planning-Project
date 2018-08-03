@@ -235,7 +235,7 @@ namespace pathplanner {
     ego_car.lane += delta;
     proposed_lane = ego_car.lane;
     if (verbosity) {
-      cout << "Lane Change: " << ego_car.lane << " Proposed Lane: " << proposed_lane << endl;
+      cout << "Change Lane: " << ego_car.lane << " Proposed Lane: " << proposed_lane << endl;
     }
     _update_ref_speed_for_lane(predictions, proposed_lane);
   }
@@ -260,7 +260,7 @@ namespace pathplanner {
         at_behind.push_back(v);
       }
       if (ego_car.is_close_to(v[0], ego_car.lane)) {
-        if (v[0].get_distance(ego_car.x, ego_car.y, ego_car.s) < 4 ) {
+        if (v[0].get_distance(ego_car.x, ego_car.y, ego_car.s) < 20 ) {
           close = true;
         }
       }

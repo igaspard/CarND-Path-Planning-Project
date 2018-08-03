@@ -80,8 +80,8 @@ namespace pathplanner {
       };
 
       // priority levels for costs
-      //int const COLLISION = pow(10, 6);
-      int const COLLISION = 2*pow(10, 5);
+      int const COLLISION = pow(10, 6);
+      //int const COLLISION = 2*pow(10, 5);
       int const DANGER = 3*pow(10, 5);
       int const COMFORT = pow(10, 4);
       int const EFFICIENCY = pow(10, 3);
@@ -92,8 +92,8 @@ namespace pathplanner {
       int const PLANNING_HORIZON = 1;
 
       double const PREDICTION_INTERVAL = 0.15;
-      double const MANOEUVRE = 4.0;
-      double const OBSERVED_DISTANCE = 65;
+      double const MANOEUVRE = 6.0;
+      double const OBSERVED_DISTANCE = 20;
       double const MAX_DISTANCE = 999999;
 
       double change_lane_cost(vector<snapshot> trajectory,

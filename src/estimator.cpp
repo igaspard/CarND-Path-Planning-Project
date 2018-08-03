@@ -46,7 +46,7 @@ namespace pathplanner {
       double exponent = time_til_collision*time_til_collision;
       double mult = exp(-exponent);
       if (verbose) {
-        cout << " collision: " << mult * COLLISION << " on step: " << data.collides.step << endl;
+        cout << __FUNCTION__ << " collision: " << mult * COLLISION << " on step: " << data.collides.step << endl;
       }
       return mult * COLLISION;
     }
@@ -95,7 +95,7 @@ namespace pathplanner {
       cost += new_cost;
     }
     if (verbose) {
-      cout << "has cost " << cost << " for state " << (int)state << endl;
+      cout << __FUNCTION__ << " has cost " << cost << " for state " << (int)state << endl;
     }
     return cost;
   }
@@ -124,13 +124,17 @@ namespace pathplanner {
     data.collides = collision();
     data.collides.hasCollision = false;
     bool checkCollisions = current_snapshot.lane != data.proposed_lane;
+    if (checkCollisions && verbose) {
+      cout << __FUNCTION__ << " Need check Collisions, Cur Lane: " << current_snapshot.lane
+      << " , Proposed: " << data.proposed_lane << endl;
+    }
 
     map<int, vector<prediction>> cars_in_proposed_lane = filter_predictions_by_lane(predictions, data.proposed_lane);
     map<int, vector<prediction>> cars_in_actual_lane = filter_predictions_by_lane(predictions, data.current_lane);
 
     if (verbose) {
-      cout << "collides in lane: " << data.proposed_lane << " has cars: " << cars_in_proposed_lane.size() << endl;
-      cout << "current lane: " << data.current_lane << " has cars: " << cars_in_actual_lane.size() << endl;
+      cout << "Collides in lane: " << data.proposed_lane << " has cars: " << cars_in_proposed_lane.size() << endl;
+      cout << "Current in lane: " << data.current_lane << " has cars: " << cars_in_actual_lane.size() << endl;
     }
     for (int i = 0; i < PLANNING_HORIZON; ++i) {
       snapshot snap = trajectory[i];
@@ -189,7 +193,7 @@ namespace pathplanner {
       if ((predicted_distance2v < MANOEUVRE || predicted_distance1v < MANOEUVRE || lack_of_space || diff < -1.0)) {
         if (verbose) {
           cout << "2nd clause: s " << s << " v " << v << " car_s: " << car_s << " col_v " << collide_car_v
-            << "obsticle: " << s_now.s << " diff " << diff << endl;
+            << " obsticle: " << s_now.s << " diff " << diff << endl;
         }
         return true;
       }
@@ -199,12 +203,21 @@ namespace pathplanner {
       if (predicted_distance1v < 0 || -diff < -MANOEUVRE) {
         if (verbose) {
           cout << "3rd clause: s " << s << " v " << v << " car_s: " << car_s << " col_v " << collide_car_v
-            << "obsticle: " << s_now.s << " diff " << diff <<endl;
+            << " obsticle: " << s_now.s << " diff " << diff <<endl;
         }
         return true;
       }
     }
-
+    // Add more restrict collision condition
+    if (abs(car_s - s_now.s) < 20) {
+      if (verbose) {
+        cout << __FUNCTION__ << " return true when the small diff: " << diff << endl;
+      }
+      return true;
+    }
+    if (lack_of_space) {
+      return true;
+    }
     return false;
   }
 

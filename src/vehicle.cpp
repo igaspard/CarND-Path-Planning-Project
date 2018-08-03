@@ -17,7 +17,7 @@ namespace pathplanner {
   using namespace helpers;
 
   double prediction::LANE_WIDTH = 4.0;
-  double Vehicle::SAFE_DISTANCE = 20.0;
+  double Vehicle::SAFE_DISTANCE = 8.0;
 
   Vehicle::Vehicle(int id, double x, double y, double dx, double dy, double s, double d) {
 
@@ -156,18 +156,34 @@ namespace pathplanner {
     return pred;
   }
 
-  bool Vehicle::is_in_front_of(prediction pred, int checked_lane) {
-    return (pred.lane == checked_lane) && pred.get_distance(x, y, s) >= 0;
+  bool Vehicle::is_in_front_of(prediction pred, int lane) {
+    double distance = pred.get_distance(x, y, s);
+    if ((pred.lane == lane) && distance >= 0) {
+      // cout << __FUNCTION__ << " Lane: " << lane << " , Distance: " << distance << endl;
+      return true;
+    } else {
+      return false;
+    }
   }
 
   bool Vehicle::is_behind_of(prediction pred, int lane) {
     double distance = -pred.get_distance(x, y, s);
-    return (pred.lane == lane) && (distance >= 0 && distance < 2*SAFE_DISTANCE);
+    if ((pred.lane == lane) && (distance >= 0 && distance < 1.5*SAFE_DISTANCE)) {
+      // cout << __FUNCTION__ << " Lane: " << lane << " , Distance: " << distance << endl;
+      return true;
+    } else {
+      return false;
+    }
   }
 
   bool Vehicle::is_close_to(prediction pred, int lane) {
-    double distance = -pred.get_distance(x, y, s);
-    return (pred.lane == lane) && distance >= 0 && (distance < SAFE_DISTANCE);
+    double distance = pred.get_distance(x, y, s);
+    if ((pred.lane == lane) && (abs(distance) < SAFE_DISTANCE)) {
+      // cout << __FUNCTION__ << " Lane: " << lane << " , Distance: " << distance << endl;
+      return true;
+    } else {
+      return false;
+    }
   }
 
   vector<prediction> Vehicle::generate_predictions(double interval, int horizon) {
